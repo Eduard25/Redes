@@ -106,11 +106,13 @@ class Network(object):
             #nabla b se le zipea, se le junta con el valor de delta nabla b
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)] #A
             #nabla w se le zipea, se le junta con el valor de delta nabla w
-        self.velocity_w = [momento * v_m - (eta / len(mini_batch))*nw
-                           for v_m, nw in zip(self.velocity_w, nabla_w)]
+        self.velocity_w = [momento * v_m - (eta / len(mini_batch))*nw #Le damos los valores del SGD momento a las variables de velocidad
+                           #Tenemos que el momento se multiplica por el gradiente anterior y este resta a lo que ya conociamos por SGD
+                           for v_m, nw in zip(self.velocity_w, nabla_w)] #Esto se repite para cada peso
         self.velocity_b = [momento * v_b - (eta / len(mini_batch))*nb
-                           for v_b, nb in zip(self.velocity_b, nabla_b)]
-        self.weights =[w + v_m for w, v_m in zip(self.weights, self.velocity_w) ]
+                           for v_b, nb in zip(self.velocity_b, nabla_b)] # Lo mismo con los biases
+        self.weights =[w + v_m for w, v_m in zip(self.weights, self.velocity_w) ] #Aqui actualizamos los valores de los pesos dandole el peso
+                        #y las velocidades, así estos pesos serán los que evaluaremos en la red
         self.biases =[b + v_b for b, v_b in zip(self.biases, self.velocity_b) ]
 
     """Aquí definimos update_mini_batch que nos va a permitir realizar el SGD
