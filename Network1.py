@@ -86,7 +86,7 @@ class Network(object):
             ylim=(0, max(cost)*1.5)) #Y aumentamos los límites de nuestra gráfica
         plt.show() #El comando para lograr visualizar la gráfica
 
-    def update_mini_batch(self, mini_batch, eta, momento):
+    def update_mini_batch(self, mini_batch, eta, momento=0.5):
         """Update the network's weights and biases by applying
         gradient descent using backpropagation to a single mini batch.
         The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
@@ -110,14 +110,9 @@ class Network(object):
                            for v_m, nw in zip(self.velocity_w, nabla_w)]
         self.velocity_b = [momento * v_b - (eta / len(mini_batch))*nb
                            for v_b, nb in zip(self.velocity_b, nabla_b)]
-        self.weights = [w-(eta/len(mini_batch))*nw 
-                        for w, nw in zip(self.weights, nabla_w)] #Determinamos que el
-            #valor para pesos este relacionado con la tasa de aprendizaje y el tamaño de
-            #el mini_batch
-        self.biases = [b-(eta/len(mini_batch))*nb
-                       for b, nb in zip(self.biases, nabla_b)] #Determinamos que el
-        #valor para biases este relacionado con la tasa de aprendizaje y el tamaño de
-        #el mini_batch
+        self.weights =[w + v_m for w, v_m in zip(self.weights, self.velocity_w) ]
+        self.biases =[b + v_b for b, v_b in zip(self.biases, self.velocity_b) ]
+
     """Aquí definimos update_mini_batch que nos va a permitir realizar el SGD
     para cada época"""
     def backprop(self, x, y):
