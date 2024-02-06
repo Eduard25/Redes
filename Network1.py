@@ -50,7 +50,7 @@ class Network(object):
         network will be evaluated against the test data after each
         epoch, and partial progress printed out.  This is useful for
         tracking progress, but slows things down substantially."""
-        cost = [] #AQUI
+        cost = [] #Inicializamos la lista de costo con cero valores para que esta pueda ser llenada
         if test_data:
             test_data = list(test_data) #Se crea una lista con los valores de prueba
             n_test = len(test_data) #Y definimos el tamaño de la lista
@@ -69,10 +69,10 @@ class Network(object):
                 self.update_mini_batch(mini_batch, eta) #Para cada mini_batch se le 
                 #aplica el SGD, con el valor de eta
             if test_data:
-                print("Epoch {0}: {1} / {2} y tiene costo: {3}".format( #Cuando se han usado todos
+                print("Epoch {0}: {1} / {2}".format( #Cuando se han usado todos
                     # los datos se les conoce como época
-                    j, self.evaluate(test_data), n_test, self.funcion_costo_cuadratica(test_data))) #Si diste datos de prueba te regresa el procentaje de aciertos
-                cost.append(self.funcion_costo_cuadratica(test_data)) #Imprimos los valores de eficiencia de encontrar el mínimo
+                    j, self.evaluate(test_data), n_test, self.funcion_costo_cross_entropy(test_data))) #Si diste datos de prueba te regresa el procentaje de aciertos
+                cost.append(self.funcion_costo_cross_entropy(test_data)) #Imprimos los valores de eficiencia de encontrar el mínimo
             else:
                 print("Epoch {0} complete".format(j)) #Cuando acaba, simplemente
                 #marca completado
@@ -94,6 +94,8 @@ class Network(object):
     """En esta parte, desarrollamos Stochastic Gradient Descent, lo que quiere
     decir que, nuestra red neuronal, va a aprender a llegar al mínimo de la
     función a través de la repetición de esta función"""
+
+    
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -151,7 +153,7 @@ class Network(object):
             activations.append(activation) #Agregamos al final de la lista de
             #activacions el valor de activation
         # backward pass
-        delta = self.cost_derivative(activations[-1], y) #Aquí la variable delta, nos va a permitir
+        delta = self.delta_new_cost_function(activations[-1], y) #Aquí la variable delta, nos va a permitir
         #calcular el error, entonces en esta primera línea calculamos
         #la derivada de la función de costo respecto a la última capa por
         #la derivada de la función sigmoide, también evaluada en la última capa
@@ -206,6 +208,30 @@ class Network(object):
         cost_epoch = np.average(cost_x) #El costo de cada epoca, sera el promedio del costo de cada elemento
 
         return(cost_epoch)
+    
+    
+    def delta_new_cost_function(self, output_activations, y): #Como fue con cost_derivative, veamos que las deltas de la función
+        #de costo de cross entropy también se cumple que los bias = delta y los pesos = delta x las activaciones de la capa anterior
+        return (output_activations-y)
+    
+    def vectorizando(self, j): #Veamos que los valores de "y" son vectores para poder operarlos, entonces esto es lo que hacemos
+        #en esta función, vectorizar
+        v = np.zeros((10, 1))
+        v[j] = 1.0
+        return v
+    
+    def funcion_costo_cross_entropy(self, test_data): #Definimos la funcion de costo cross entropy binary, para poder graficar
+        cost_x = [] #Inicializamos con valores cero la lista de costo_x
+        for (x, y) in test_data:
+             y = self.vectorizando(y) #Vectorizamos y
+             cost_x.append(np.nan_to_num(-y*np.log(self.feedforward(x)) - (1-y)*np.log(1-self.feedforward(x))))
+             #Escribimos el valor de la función y agregamos el append, porque queremos que cada valor del costo_x se agregue como
+             #ultimo elemento a la lista costo_x
+        cost_epoch = np.average(cost_x) #Sacamos el promedio de todos los elementos de cost_x
+
+        return(cost_epoch)
+    
+
     
 #### Miscellaneous functions
 def sigmoid(z):
