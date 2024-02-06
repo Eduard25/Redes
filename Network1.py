@@ -24,6 +24,8 @@ class Network(object):
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
+        self.velocity_w = [np.zeros(w.shape) for w in self.weights]
+        self.velocity_b = [np.zeros(b.shape) for b in self.biases]
         #COMENTARIOS DE LA PRIMERA SECCIÓN
         """En esta primera sección definimos el número de capas
         que hay en la red neuronal, a través del tamaño de SIZES
@@ -40,16 +42,10 @@ class Network(object):
             #previamente encontrados
         return a #Regresamos el valor de a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta,
+
+    def SGD_Momentum(self, training_data, epochs, mini_batch_size, eta,
             test_data=None): #Definimos SGD junto con sus variables
-        """Train the neural network using mini-batch stochastic
-        gradient descent.  The ``training_data`` is a list of tuples
-        ``(x, y)`` representing the training inputs and the desired
-        outputs.  The other non-optional parameters are
-        self-explanatory.  If ``test_data`` is provided then the
-        network will be evaluated against the test data after each
-        epoch, and partial progress printed out.  This is useful for
-        tracking progress, but slows things down substantially."""
+    
         cost = [] #Inicializamos la lista de costo con cero valores para que esta pueda ser llenada
         if test_data:
             test_data = list(test_data) #Se crea una lista con los valores de prueba
@@ -58,6 +54,7 @@ class Network(object):
         training_data = list(training_data) #Se crea una lista con los valores
         #de entrenamiento
         n = len(training_data) #Y definimos el tamaño de esta lista
+        
         for j in range(epochs):#Cada época se va a componer de la siguiente manera
             random.shuffle(training_data) #Revolvemos aleatoriamente los valores
             #de entrenamiento
@@ -66,10 +63,10 @@ class Network(object):
                  # se acoplan en subconjuntos Para dar un paso de entrenamiento
                 for k in range(0, n, mini_batch_size)] 
             for mini_batch in mini_batches:
-                self.update_mini_batch(mini_batch, eta) #Para cada mini_batch se le 
+                self.update_mini_batch(mini_batch, eta, momento=0.5) #Para cada mini_batch se le 
                 #aplica el SGD, con el valor de eta
             if test_data:
-                print("Epoch {0}: {1} / {2}".format( #Cuando se han usado todos
+                print("Epoch {0}: {1} / {2} y tiene costo: {3}".format( #Cuando se han usado todos
                     # los datos se les conoce como época
                     j, self.evaluate(test_data), n_test, self.funcion_costo_cross_entropy(test_data))) #Si diste datos de prueba te regresa el procentaje de aciertos
                 cost.append(self.funcion_costo_cross_entropy(test_data)) #Imprimos los valores de eficiencia de encontrar el mínimo
@@ -89,15 +86,7 @@ class Network(object):
             ylim=(0, max(cost)*1.5)) #Y aumentamos los límites de nuestra gráfica
         plt.show() #El comando para lograr visualizar la gráfica
 
-            
-
-    """En esta parte, desarrollamos Stochastic Gradient Descent, lo que quiere
-    decir que, nuestra red neuronal, va a aprender a llegar al mínimo de la
-    función a través de la repetición de esta función"""
-
-    
-
-    def update_mini_batch(self, mini_batch, eta):
+    def update_mini_batch(self, mini_batch, eta, momento):
         """Update the network's weights and biases by applying
         gradient descent using backpropagation to a single mini batch.
         The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
@@ -117,10 +106,14 @@ class Network(object):
             #nabla b se le zipea, se le junta con el valor de delta nabla b
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)] #A
             #nabla w se le zipea, se le junta con el valor de delta nabla w
+        self.velocity_w = [momento * v_m - (eta / len(mini_batch))*nw
+                           for v_m, nw in zip(self.velocity_w, nabla_w)]
+        self.velocity_b = [momento * v_b - (eta / len(mini_batch))*nb
+                           for v_b, nb in zip(self.velocity_b, nabla_b)]
         self.weights = [w-(eta/len(mini_batch))*nw 
                         for w, nw in zip(self.weights, nabla_w)] #Determinamos que el
-        #valor para pesos este relacionado con la tasa de aprendizaje y el tamaño de
-        #el mini_batch
+            #valor para pesos este relacionado con la tasa de aprendizaje y el tamaño de
+            #el mini_batch
         self.biases = [b-(eta/len(mini_batch))*nb
                        for b, nb in zip(self.biases, nabla_b)] #Determinamos que el
         #valor para biases este relacionado con la tasa de aprendizaje y el tamaño de
