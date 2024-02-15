@@ -13,7 +13,7 @@ from keras.optimizers import RMSprop, SGD
 #wandb login
 
 learning_rate = 0.05
-epochs = 25
+epochs = 30
 batch_size = 120
 
 import wandb
@@ -82,15 +82,15 @@ y_testc = keras.utils.to_categorical(y_test, num_classes)
 #print(y_trainc[6:15])
 
 model = Sequential()
-model.add(Dense(512, activation='sigmoid', input_shape=(784,)))
+model.add(Dense(256, activation='selu', input_shape=(784,)))
 #model.add(Dropout(0.2))
-model.add(Dense(512, activation='relu'))
+model.add(Dense(256, activation='relu'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(num_classes, activation='selu'))
 
 model.summary()
 
-model.compile(loss='categorical_crossentropy',optimizer=SGD(learning_rate=learning_rate),metrics=['accuracy'])
+model.compile(loss='binary_crossentropy',optimizer=SGD(learning_rate=learning_rate),metrics=['accuracy'])
 
 history = model.fit(x_trainv, y_trainc,
                     batch_size=batch_size,
