@@ -82,11 +82,11 @@ y_testc = keras.utils.to_categorical(y_test, num_classes)
 #print(y_trainc[6:15])
 
 model = Sequential()
-model.add(Dense(512, activation='sigmoid', input_shape=(784,)))
+model.add(Dense(64, activation='elu', input_shape=(784,)))
 #model.add(Dropout(0.2))
-model.add(Dense(512, activation='sigmoid'))
+model.add(Dense(64, activation='elu'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(num_classes, activation='elu'))
 
 model.summary()
 
