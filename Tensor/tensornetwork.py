@@ -12,7 +12,7 @@ from keras.optimizers import RMSprop, SGD
 #pip install wandb
 #wandb login
 
-learning_rate = 0.05
+learning_rate = 0.3
 epochs = 20
 batch_size = 80
 
@@ -82,11 +82,11 @@ y_testc = keras.utils.to_categorical(y_test, num_classes)
 #print(y_trainc[6:15])
 
 model = Sequential()
-model.add(Dense(64, activation='elu', input_shape=(784,)))
+model.add(Dense(64, activation='softmax', input_shape=(784,)))
 #model.add(Dropout(0.2))
-model.add(Dense(64, activation='elu'))
+model.add(Dense(64, activation='relu'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='elu'))
+model.add(Dense(num_classes, activation='softmax'))
 
 model.summary()
 
@@ -117,3 +117,9 @@ model.save("red.h5")
 exit()
 #para cargar la red:
 modelo_cargado = tf.keras.models.load_model('red.h5')
+
+#Softmax, relu, softmax, 64, 0.05 Está como en 78 acurracy
+#Softmax, relu, softmax, 64, 0.001 Está como en 15 acurracy
+#Softmax, relu, softmax, 64, 0.3 Está como en 90 acurracy
+#Softplus, softmax, sigmoide 256, 0.3 Está como en 95 acurracy :0
+#Softplus, softmax, tanh 256, 0.5 Está como en 08.92 acurracy y ya no sube ni baja :0
