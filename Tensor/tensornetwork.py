@@ -6,6 +6,7 @@ from tensorflow import keras
 from keras.datasets import mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
+from keras import regularizers
 from keras.optimizers import RMSprop, SGD
 
 
@@ -13,10 +14,9 @@ from keras.optimizers import RMSprop, SGD
 #pip install wandb
 #wandb login
 
-learning_rate = 0.4
-epochs = 30
-batch_size = 50
-momentum = 0.5
+learning_rate = 0.3
+epochs = 50
+batch_size = 80
 
 import wandb
 from wandb.keras import WandbCallback, WandbMetricsLogger, WandbModelCheckpoint
@@ -86,13 +86,15 @@ y_testc = keras.utils.to_categorical(y_test, num_classes)
 model = Sequential()
 model.add(Dense(256, activation='softplus', input_shape=(784,)))
 #model.add(Dropout(0.2))
+
 model.add(Dense(256, activation='softmax'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer=regularizers.L1(0.01),
+                                                    activity_regularizer=regularizers.L1(0.01)))
 
 model.summary()
 
-model.compile(loss='categorical_crossentropy',optimizer=SGD(learning_rate=learning_rate),metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=SGD(learning_rate=learning_rate),metrics=['accuracy'])
 
 history = model.fit(x_trainv, y_trainc,
                     batch_size=batch_size,
