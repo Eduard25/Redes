@@ -8,13 +8,15 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop, SGD
 
+
 #Para escribir logs en wandb
 #pip install wandb
 #wandb login
 
-learning_rate = 0.3
-epochs = 25
-batch_size = 80
+learning_rate = 0.4
+epochs = 30
+batch_size = 50
+momentum = 0.5
 
 import wandb
 from wandb.keras import WandbCallback, WandbMetricsLogger, WandbModelCheckpoint
