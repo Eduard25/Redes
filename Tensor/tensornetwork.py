@@ -13,7 +13,7 @@ from keras.optimizers import RMSprop, SGD
 #wandb login
 
 learning_rate = 0.3
-epochs = 20
+epochs = 25
 batch_size = 80
 
 import wandb
@@ -82,11 +82,11 @@ y_testc = keras.utils.to_categorical(y_test, num_classes)
 #print(y_trainc[6:15])
 
 model = Sequential()
-model.add(Dense(64, activation='softmax', input_shape=(784,)))
+model.add(Dense(256, activation='softplus', input_shape=(784,)))
 #model.add(Dropout(0.2))
-model.add(Dense(64, activation='relu'))
+model.add(Dense(256, activation='softmax'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='softmax'))
+model.add(Dense(num_classes, activation='sigmoid'))
 
 model.summary()
 
