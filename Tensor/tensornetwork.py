@@ -89,7 +89,7 @@ model.add(Dropout(0.2))
 
 model.add(Dense(256, activation='softmax'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(num_classes, kernel_regularizer='l1_l2', activation='sigmoid'))
 
 model.summary()
 
