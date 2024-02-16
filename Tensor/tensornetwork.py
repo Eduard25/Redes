@@ -89,8 +89,7 @@ model.add(Dense(256, activation='softplus', input_shape=(784,)))
 
 model.add(Dense(256, activation='softmax'))
 #model.add(Dense(num_classes, activation='softmax'))
-model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer=regularizers.L1(0.01),
-                                                    activity_regularizer=regularizers.L1(0.01)))
+model.add(Dense(num_classes, activation='sigmoid', kernel_regularizer='l2'))
 
 model.summary()
 
